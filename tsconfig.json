@@ -1,0 +1,33 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    // -------- Disable strict type checking --------
+    "strict": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "noPropertyAccessFromIndexSignature": false,
+    // -------- Allow JS & skip checking --------
+    "allowJs": true,
+    "skipLibCheck": true,
+    "checkJs": false,
+    // -------- Disable unused variable checks --------
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    // -------- Disable null strictness --------
+    "strictNullChecks": false
+  }
+}
