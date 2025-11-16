@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "./integration";
@@ -143,36 +144,48 @@ const FormBuilder = () => {
         setEmbedCode(code.trim());
     };
 
+    // useEffect(() => {
+    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //     supabase.auth.getSession().then(({ data: { session } }: any) => {
+    //         if (!session) {
+    //             navigate("/auth");
+    //         } else {
+    //             loadForm();
+    //         }
+    //     });
+    // }, [id, navigate]);
+
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        supabase.auth.getSession().then(({ data: { session } }: any) => {
-            if (!session) {
-                navigate("/auth");
-            } else {
-                loadForm();
-            }
-        });
+        const token = sessionStorage.getItem("token");
+
+        if (!token) {
+            navigate("/auth");
+            return;
+        }
+
+        loadForm();
     }, [id, navigate]);
 
     const loadForm = async () => {
         try {
-            const { data: formData, error: formError } = await supabase
-                .from("forms")
-                .select("*")
-                .eq("id", id)
-                .single();
+            // const { data: formData, error: formError } = await supabase
+            //     .from("forms")
+            //     .select("*")
+            //     .eq("id", id)
+            //     .single();
 
-            if (formError) throw formError;
-            setForm(formData);
+            // if (formError) throw formError;
+            // setForm(formData);
 
-            const { data: fieldsData, error: fieldsError } = await supabase
-                .from("form_fields")
-                .select("*")
-                .eq("form_id", id)
-                .order("position");
+            // const { data: fieldsData, error: fieldsError } = await supabase
+            //     .from("form_fields")
+            //     .select("*")
+            //     .eq("form_id", id)
+            //     .order("position");
 
-            if (fieldsError) throw fieldsError;
-            setFields(fieldsData || []);
+            // if (fieldsError) throw fieldsError;
+            // setFields(fieldsData || []);
+            setFields([])
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             toast.error(error.message || "Failed to load form");
@@ -186,15 +199,50 @@ const FormBuilder = () => {
         if (!form) return;
 
         try {
-            const { error } = await supabase
-                .from("forms")
-                .update({
-                    title: form.title,
-                    description: form.description,
-                })
-                .eq("id", id);
+            // const { error } = await supabase
+            //     .from("forms")
+            //     .update({
+            //         title: form.title,
+            //         description: form.description,
+            //     })
+            //     .eq("id", id);
 
-            if (error) throw error;
+            // if (error) throw error;
+
+            // generateEmbedCode()
+
+            const payload = {
+                title: form.title,
+                description: form.description,
+                embedded_code: embedCode,
+                styles: {},
+                fields: fields.map((f, index) => ({
+                    label: f.label,
+                    type: f.field_type,
+                    required: f.required,
+                    placeholder: f.placeholder,
+                    field_order: index,
+                    status: 1,
+                    options: f.options
+                }),),
+            }
+
+            const response = await fetch(`http://localhost:3000/forms`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to save form");
+            }
+
+            const data = await response.json();
+
+            console.log("data:::", data)
+
             toast.success("Form saved successfully");
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
@@ -209,20 +257,27 @@ const FormBuilder = () => {
             const newPosition = fields.length;
             const fieldLabel = FIELD_TYPES.find(t => t.value === fieldType)?.label || "New Field";
 
-            const { data, error } = await supabase
-                .from("form_fields")
-                .insert({
-                    form_id: id,
-                    field_type: fieldType,
-                    label: fieldLabel,
-                    placeholder: fieldType === "heading" ? null : "",
-                    required: false,
-                    position: newPosition,
-                })
-                .select()
-                .single();
+            // const { data, error } = await supabase
+            //     .from("form_fields")
+            //     .insert({
+            //         form_id: id,
+            //         field_type: fieldType,
+            //         label: fieldLabel,
+            //         placeholder: fieldType === "heading" ? null : "",
+            //         required: false,
+            //         position: newPosition,
+            //     })
+            //     .select()
+            //     .single();
 
-            if (error) throw error;
+            const data: any = {
+                id: Math.random().toString(36).substr(2, 9), // Temporary ID generation
+                field_type: fieldType,
+                label: fieldLabel,
+                placeholder: fieldType === "heading" ? null : "",
+                required: false,
+                position: newPosition,
+            }
             setFields([...fields, data]);
             toast.success("Field added");
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -282,12 +337,12 @@ const FormBuilder = () => {
 
     const handleUpdateField = async (fieldId: string, updates: Partial<FormField>) => {
         try {
-            const { error } = await supabase
-                .from("form_fields")
-                .update(updates)
-                .eq("id", fieldId);
+            // const { error } = await supabase
+            //     .from("form_fields")
+            //     .update(updates)
+            //     .eq("id", fieldId);
 
-            if (error) throw error;
+            // if (error) throw error;
 
             setFields(fields.map(f => f.id === fieldId ? { ...f, ...updates } : f));
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -298,8 +353,9 @@ const FormBuilder = () => {
 
     const handleDeleteField = async (fieldId: string) => {
         try {
-            const { error } = await supabase.from("form_fields").delete().eq("id", fieldId);
-            if (error) throw error;
+            console.log("fieldId:::", fieldId)
+            // const { error } = await supabase.from("form_fields").delete().eq("id", fieldId);
+            // if (error) throw error;
             setFields(fields.filter(f => f.id !== fieldId));
             toast.success("Field deleted");
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

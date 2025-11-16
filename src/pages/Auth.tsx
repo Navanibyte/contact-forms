@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "./integration";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const authSchema = z.object({
     email: z.string().trim().email({ message: "Invalid email address" }).max(255),
     password: z.string().min(6, { message: "Password must be at least 6 characters" }).max(100),
@@ -23,14 +22,13 @@ const Auth = () => {
     const [password, setPassword] = useState("");
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        supabase.auth.getSession().then(({ data: { session } }: any) => {
-            if (session) {
-                navigate("/dashboard");
-            }
-        });
-    }, [navigate]);
+        const token = sessionStorage.getItem("token");
+        if (token) navigate("/dashboard");
+    }, []);
 
+    // -----------------------
+    // SIGN-UP
+    // -----------------------
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -38,30 +36,31 @@ const Auth = () => {
         try {
             const validated = authSchema.parse({ email, password });
 
-            const { error } = await supabase.auth.signUp({
-                email: validated.email,
-                password: validated.password,
-                options: {
-                    emailRedirectTo: `${window.location.origin}/dashboard`
-                }
+            const response = await fetch("http://localhost:3000/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(validated),
             });
 
-            if (error) throw error;
+            const data = await response.json();
 
-            toast.success("Account created! Please check your email.");
-            navigate("/dashboard");
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if (!response.ok) throw new Error(data.message || "Registration failed");
+
+            toast.success("Account created! Please sign in.");
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 toast.error(error.errors[0].message);
             } else {
-                toast.error(error.message || "Failed to sign up");
+                toast.error(error.message);
             }
         } finally {
             setLoading(false);
         }
     };
 
+    // -----------------------
+    // SIGN-IN
+    // -----------------------
     const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -69,21 +68,25 @@ const Auth = () => {
         try {
             const validated = authSchema.parse({ email, password });
 
-            const { error } = await supabase.auth.signInWithPassword({
-                email: validated.email,
-                password: validated.password,
+            const response = await fetch("http://localhost:3000/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(validated),
             });
 
-            if (error) throw error;
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.message || "Login failed");
+
+            sessionStorage.setItem("token", data.token);
 
             toast.success("Signed in successfully!");
             navigate("/dashboard");
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             if (error instanceof z.ZodError) {
                 toast.error(error.errors[0].message);
             } else {
-                toast.error(error.message || "Failed to sign in");
+                toast.error(error.message);
             }
         } finally {
             setLoading(false);
@@ -106,64 +109,66 @@ const Auth = () => {
                             <TabsTrigger value="signup">Sign Up</TabsTrigger>
                         </TabsList>
 
+                        {/* SIGN IN */}
                         <TabsContent value="signin">
                             <form onSubmit={handleSignIn} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="signin-email">Email</Label>
+                                    <Label>Email</Label>
                                     <Input
-                                        id="signin-email"
                                         type="email"
                                         placeholder="you@example.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        required
                                         disabled={loading}
+                                        required
                                     />
                                 </div>
+
                                 <div className="space-y-2">
-                                    <Label htmlFor="signin-password">Password</Label>
+                                    <Label>Password</Label>
                                     <Input
-                                        id="signin-password"
                                         type="password"
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        required
                                         disabled={loading}
+                                        required
                                     />
                                 </div>
+
                                 <Button type="submit" className="w-full" disabled={loading}>
                                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
                                 </Button>
                             </form>
                         </TabsContent>
 
+                        {/* SIGN UP */}
                         <TabsContent value="signup">
                             <form onSubmit={handleSignUp} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="signup-email">Email</Label>
+                                    <Label>Email</Label>
                                     <Input
-                                        id="signup-email"
                                         type="email"
                                         placeholder="you@example.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        required
                                         disabled={loading}
+                                        required
                                     />
                                 </div>
+
                                 <div className="space-y-2">
-                                    <Label htmlFor="signup-password">Password</Label>
+                                    <Label>Password</Label>
                                     <Input
-                                        id="signup-password"
                                         type="password"
                                         placeholder="••••••••"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        required
                                         disabled={loading}
+                                        required
                                     />
                                 </div>
+
                                 <Button type="submit" className="w-full" disabled={loading}>
                                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
                                 </Button>
