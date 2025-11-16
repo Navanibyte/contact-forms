@@ -168,32 +168,74 @@ const FormBuilder = () => {
 
     const loadForm = async () => {
         try {
-            // const { data: formData, error: formError } = await supabase
-            //     .from("forms")
-            //     .select("*")
-            //     .eq("id", id)
-            //     .single();
+            setLoading(true);
 
-            // if (formError) throw formError;
-            // setForm(formData);
+            const token = sessionStorage.getItem("token");
 
-            // const { data: fieldsData, error: fieldsError } = await supabase
-            //     .from("form_fields")
-            //     .select("*")
-            //     .eq("form_id", id)
-            //     .order("position");
+            const response = await fetch(`http://localhost:3000/forms/${id}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
 
-            // if (fieldsError) throw fieldsError;
-            // setFields(fieldsData || []);
-            setFields([])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // -------------------------------
+            // CASE 1: Form doesn't exist → Create Mode
+            // -------------------------------
+            if (response.status === 404) {
+                setForm({
+                    id: "",
+                    title: "",
+                    description: ""
+                });
+                setFields([]);
+                // setIsEditing(false);
+                return;
+            }
+
+            // -------------------------------
+            // CASE 2: Other errors
+            // -------------------------------
+            if (!response.ok) {
+                throw new Error("Failed to fetch form");
+            }
+
+            // -------------------------------
+            // CASE 3: Form exists → Edit Mode
+            // -------------------------------
+            const data = await response.json();
+
+            setForm({
+                id: data.form_id,
+                title: data.title,
+                description: data.description,
+            });
+
+            setFields(
+                (data.fields || [])
+                    .sort((a: any, b: any) => a.position - b.position)
+                    .map((f: any) => ({
+                        id: f.field_id,
+                        field_type: f.type,
+                        label: f.label,
+                        placeholder: f.placeholder,
+                        required: f.required,
+                        options: f.options,
+                        position: f.position,
+                    }))
+            );
+
+            // setIsEditing(true);
+
         } catch (error: any) {
-            toast.error(error.message || "Failed to load form");
+            toast.error(error.message || "Error loading form");
             navigate("/dashboard");
         } finally {
             setLoading(false);
         }
     };
+
 
     const handleSaveForm = async () => {
         if (!form) return;
@@ -231,6 +273,7 @@ const FormBuilder = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${sessionStorage.getItem("token")}`
                 },
                 body: JSON.stringify(payload),
             })

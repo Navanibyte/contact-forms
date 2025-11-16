@@ -19,7 +19,7 @@ import {
 import { Input } from "../components/ui/input";
 
 interface Form {
-    id: string;
+    form_id: string;
     title: string;
     description: string | null;
     created_at: string;
@@ -200,7 +200,7 @@ const Dashboard = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredForms.map((form) => (
-                            <Card key={form.id} className="shadow-soft hover:shadow-medium transition-shadow">
+                            <Card key={form.form_id} className="shadow-soft hover:shadow-medium transition-shadow">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         <FileText className="h-5 w-5 text-primary" />
@@ -214,7 +214,7 @@ const Dashboard = () => {
                                         <Button
                                             variant="outline"
                                             className="flex-1"
-                                            onClick={() => navigate(`/builder/${form.id}`)}
+                                            onClick={() => navigate(`/builder/${form.form_id}`)}
                                         >
                                             <Pencil className="h-4 w-4 mr-2" />
                                             Edit
@@ -239,7 +239,7 @@ const Dashboard = () => {
 
                                                 <AlertDialogFooter>
                                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction onClick={() => handleDeleteForm(form.id)}>
+                                                    <AlertDialogAction onClick={() => handleDeleteForm(form.form_id)}>
                                                         Delete
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
