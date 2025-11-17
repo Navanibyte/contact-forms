@@ -157,7 +157,7 @@ const Dashboard = () => {
             {/* HEADER */}
             <header className="border-b bg-card/50 backdrop-blur-sm">
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                    <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text">
                         FormCraft
                     </h1>
                     <Button variant="ghost" onClick={handleSignOut}>
