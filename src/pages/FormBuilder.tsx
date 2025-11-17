@@ -269,8 +269,8 @@ const FormBuilder = () => {
                 }),),
             }
 
-            const response = await fetch(`http://localhost:3000/forms`, {
-                method: "POST",
+            const response = await fetch(`http://localhost:3000/forms/${id}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${sessionStorage.getItem("token")}`

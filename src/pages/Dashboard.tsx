@@ -107,31 +107,45 @@ const Dashboard = () => {
     // -------------------------
     const handleNewForm = async () => {
         try {
-            // const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
 
-            // const response = await fetch("http://localhost:3000/forms", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         Authorization: `Bearer ${token}`
-            //     },
-            //     body: JSON.stringify({
-            //         title: "Untitled Form",
-            //         description: ""
-            //     })
-            // });
+            const response = await fetch("http://localhost:3000/forms", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    title: "Untitled Form",
+                    description: "",
+                    embedded_code: "",
+                    styles: {},
+                    fields: [],
+                })
+            });
 
-            // const data = await response.json();
+            const data = await response.json();
 
-            // if (!response.ok) throw new Error(data.message || "Failed to create form");
+            if (!response.ok) throw new Error(data.message || "Failed to create form");
 
-            // toast.success("New form created!");
-            navigate(`/builder/${12345}`);
+            toast.success("New form created!");
+
+            // 🛠 FIX: Backend might return "id" or "form_id"
+            const id = data?.[0]?.form_id || data?.[0]?.id;
+
+            if (!id) {
+                toast.error("Form created but no form_id returned");
+                console.error("Error: Missing form_id in backend response:", data);
+                return;
+            }
+
+            // 🛠 If ID is valid → navigate
+            navigate(`/builder/${id}`);
+
         } catch (error: any) {
             toast.error(error.message);
         }
     };
-
     const filteredForms = forms.filter(
         (form) =>
             form.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
