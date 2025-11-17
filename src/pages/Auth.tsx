@@ -78,7 +78,7 @@ const Auth = () => {
 
             if (!response.ok) throw new Error(data.message || "Login failed");
 
-            sessionStorage.setItem("token", data.token.accessToken);
+            sessionStorage.setItem("token", data.accessToken);
 
             toast.success("Signed in successfully!");
             navigate("/dashboard");
