@@ -267,12 +267,12 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 interface Form {
     id: string;
-    title: string;
+    title: string | null;
     description: string | null;
 }
 
@@ -290,21 +290,20 @@ const PublicForm = () => {
     const { id } = useParams();
     const [form, setForm] = useState<Form | null>(null);
     const [fields, setFields] = useState<FormField[]>([]);
-    const [formData, setFormData] = useState<any>({});
+    const [formData, setFormData] = useState<Record<string, any>>({});
     const [message, setMessage] = useState("");
+    const formRef = useRef<HTMLFormElement>(null);
 
     /** LOAD FORM */
     const load = async () => {
         try {
             const response = await fetch(`http://localhost:3000/forms/${id}`);
-
             if (response.status === 404) {
                 setForm({ id: id!, title: "Form", description: "" });
                 return;
             }
 
             const data = await response.json();
-
             setForm({
                 id: data.form_id,
                 title: data.title,
@@ -324,6 +323,15 @@ const PublicForm = () => {
                 }));
 
             setFields(normalizedFields);
+
+            // Initialize formData
+            const initialFormData: Record<string, any> = {};
+            normalizedFields.forEach(f => {
+                if (f.field_type === "checkbox") initialFormData[f.id] = false;
+                else initialFormData[f.id] = "";
+            });
+            setFormData(initialFormData);
+
         } catch (error) {
             console.error("Error loading form:", error);
         }
@@ -338,51 +346,89 @@ const PublicForm = () => {
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         const { name, value, type, checked } = e.target;
-
-        console.log("name:", name, "value:", value, "type:", type, "checked:", checked);
-
-        // Find the field object by id
-        const field = fields.find(f => f.field_type.toLowerCase() === type.toLowerCase());
-
-        console.log("field found:", field);
-
-        if (!field) return;
-
-        const key = field.label; // Use the label as key
-
-        console.log("Updating key:", key);
-
-        setFormData((prev: any) => ({
+        setFormData(prev => ({
             ...prev,
-            [key]: type === "checkbox" ? checked : value,
+            [name]: type === "checkbox" ? checked : value,
         }));
+    };
+
+    /** GENERATE READ-ONLY HTML FOR EMAIL */
+    const generateReadOnlyHtml = (): string => {
+        let htmlFields = "";
+
+        fields.forEach(field => {
+            const value = formData[field.id];
+            let displayValue = value;
+
+            if (typeof value === "boolean") displayValue = value ? "Yes" : "No";
+            else if (!value) displayValue = "-";
+
+            htmlFields += `
+        <div class="field-row">
+          <div class="field-label">${field.label}</div>
+          <div class="field-value">${displayValue}</div>
+        </div>
+      `;
+        });
+
+        return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { background: #f4f6f8; font-family: Inter, Arial, sans-serif; padding: 20px; }
+          .email-container { max-width: 650px; background: #fff; margin: 0 auto; padding: 30px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+          .title { font-size: 26px; font-weight: 700; margin-bottom: 10px; color: #1f2937; }
+          .description { color: #6b7280; font-size: 15px; margin-bottom: 25px; }
+          .section-title { font-size: 20px; font-weight: 600; margin-bottom: 18px; color: #111827; border-bottom: 2px solid #f3f4f6; padding-bottom: 6px; }
+          .field-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #e5e7eb; }
+          .field-label { font-weight: 600; color: #374151; width: 40%; }
+          .field-value { width: 55%; color: #111827; background: #f9fafb; padding: 10px 14px; border-radius: 8px; border: 1px solid #e5e7eb; word-break: break-word; white-space: pre-wrap; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="email-container">
+          <div class="title">${form?.title || "Form Submitted"}</div>
+          <div class="description">${form?.description || ""}</div>
+          <div class="section-title">Form Submission</div>
+          ${htmlFields}
+        </div>
+      </body>
+      </html>
+    `;
     };
 
     /** SUBMIT FORM */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         setMessage("Submitting...");
 
-        console.log("Form Data to submit:", formData);
+        const htmlString = generateReadOnlyHtml();
+        const payload = {
+            form_id: form?.id,
+            html: htmlString,
+            data: formData,
+            metadata: {
+                backgroundColor: "#f8f9fc",
+                numberOfFields: fields.length,
+                formTitle: form?.title,
+                formDescription: form?.description,
+            },
+        };
 
         try {
             const res = await fetch(`http://localhost:3000/forms/${id}/submit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(payload),
             });
 
             const data = await res.json();
-
-            if (res.ok) {
-                setMessage("Form submitted successfully!");
-            } else {
-                setMessage("Error: " + data.message);
-            }
+            setMessage(res.ok ? "Form submitted successfully!" : "Error: " + data.message);
         } catch (error) {
             setMessage("Something went wrong!");
         }
@@ -392,21 +438,15 @@ const PublicForm = () => {
     const renderField = (field: FormField) => {
         switch (field.field_type) {
             case "heading":
-                return (
-                    <h3 className="pf-heading" key={field.id}>
-                        {field.label}
-                    </h3>
-                );
+                return <h3 className="pf-heading" key={field.id}>{field.label}</h3>;
 
             case "text":
             case "email":
             case "phone":
+            case "date":
                 return (
                     <div className="pf-field" key={field.id}>
-                        <label>
-                            {field.label}
-                            {field.required ? " *" : ""}
-                        </label>
+                        <label>{field.label}{field.required ? " *" : ""}</label>
                         <input
                             type={field.field_type}
                             name={field.id}
@@ -420,10 +460,7 @@ const PublicForm = () => {
             case "textarea":
                 return (
                     <div className="pf-field" key={field.id}>
-                        <label>
-                            {field.label}
-                            {field.required ? " *" : ""}
-                        </label>
+                        <label>{field.label}{field.required ? " *" : ""}</label>
                         <textarea
                             name={field.id}
                             placeholder={field.placeholder || ""}
@@ -449,35 +486,14 @@ const PublicForm = () => {
             case "select":
                 return (
                     <div className="pf-field" key={field.id}>
-                        <label>
-                            {field.label}
-                            {field.required ? " *" : ""}
-                        </label>
+                        <label>{field.label}{field.required ? " *" : ""}</label>
                         <select
                             name={field.id}
                             required={field.required}
                             onChange={handleChange}
                         >
-                            {(field.options || []).map((o, i) => (
-                                <option key={i}>{o}</option>
-                            ))}
+                            {(field.options || []).map((o, i) => <option key={i}>{o}</option>)}
                         </select>
-                    </div>
-                );
-
-            case "date":
-                return (
-                    <div className="pf-field" key={field.id}>
-                        <label>
-                            {field.label}
-                            {field.required ? " *" : ""}
-                        </label>
-                        <input
-                            type="date"
-                            name={field.id}
-                            required={field.required}
-                            onChange={handleChange}
-                        />
                     </div>
                 );
 
@@ -490,51 +506,30 @@ const PublicForm = () => {
 
     return (
         <>
-            {/* ======= SAME STYLES YOU USED BEFORE ======= */}
             <style>
                 {`
-        body { background: #f8f9fc; }
-        .pf-container {
-          max-width: 650px;
-          margin: 40px auto;
-          padding: 32px;
-          background: #ffffff;
-          border-radius: 18px;
-          font-family: Inter, sans-serif;
-          box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-        }
-        .pf-title { font-size: 28px; font-weight: 700; margin-bottom: 4px; color: #1f2937; }
-        .pf-desc { color: #6b7280; margin-bottom: 24px; font-size: 15px; }
-        .pf-heading { font-size: 22px; font-weight: 600; margin: 28px 0 10px; color: #1f2937; }
-        .pf-field { margin-bottom: 20px; display: flex; flex-direction: column; }
-        .pf-field label { margin-bottom: 6px; font-weight: 500; color: #374151; }
-        .pf-field input, .pf-field textarea, .pf-field select {
-          padding: 12px; border: 1px solid #d1d5db; background: #f9fafb;
-          border-radius: 10px; font-size: 15px;
-        }
-        .pf-field textarea { height: 100px; resize: vertical; }
-        .pf-checkbox-row { display: flex; gap: 10px; align-items: center; }
-        .pf-submit {
-          width: 100%; padding: 14px; background: #f97316; color: white;
-          border-radius: 10px; border: none; cursor: pointer; font-size: 17px;
-          margin-top: 10px; font-weight: 600;
-        }
-        .pf-submit:hover { background: #ea580c; }
-      `}
+          body { background: #f8f9fc; }
+          .pf-container { max-width: 650px; margin: 40px auto; padding: 32px; background: #ffffff; border-radius: 18px; font-family: Inter, sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+          .pf-title { font-size: 28px; font-weight: 700; margin-bottom: 4px; color: #1f2937; }
+          .pf-desc { color: #6b7280; margin-bottom: 24px; font-size: 15px; }
+          .pf-heading { font-size: 22px; font-weight: 600; margin: 28px 0 10px; color: #1f2937; }
+          .pf-field { margin-bottom: 20px; display: flex; flex-direction: column; }
+          .pf-field label { margin-bottom: 6px; font-weight: 500; color: #374151; }
+          .pf-field input, .pf-field textarea, .pf-field select { padding: 12px; border: 1px solid #d1d5db; background: #f9fafb; border-radius: 10px; font-size: 15px; }
+          .pf-field textarea { height: 100px; resize: vertical; }
+          .pf-checkbox-row { display: flex; gap: 10px; align-items: center; }
+          .pf-submit { width: 100%; padding: 14px; background: #f97316; color: white; border-radius: 10px; border: none; cursor: pointer; font-size: 17px; margin-top: 10px; font-weight: 600; }
+          .pf-submit:hover { background: #ea580c; }
+        `}
             </style>
 
             <div className="pf-container">
                 <h2 className="pf-title">{form.title}</h2>
                 <p className="pf-desc">{form.description || ""}</p>
-
-                <form onSubmit={handleSubmit}>
+                <form ref={formRef} onSubmit={handleSubmit}>
                     {fields.map(renderField)}
-
-                    <button type="submit" className="pf-submit">
-                        Submit
-                    </button>
+                    <button type="submit" className="pf-submit">Submit</button>
                 </form>
-
                 {message && <p style={{ marginTop: 15, fontSize: 16 }}>{message}</p>}
             </div>
         </>
