@@ -79,6 +79,7 @@ const Auth = () => {
             if (!response.ok) throw new Error(data.message || "Login failed");
 
             sessionStorage.setItem("token", data.accessToken);
+            localStorage.setItem("token", data.accessToken); // For persistence across sessions
 
             toast.success("Signed in successfully!");
             navigate("/dashboard");
