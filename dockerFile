@@ -9,7 +9,7 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy entire project
+# Copy entire projec
 COPY . .
 
 # Build Vite production bundle
