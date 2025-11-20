@@ -862,7 +862,7 @@ const DEFAULT_STYLES: FormStyles = {
         inputFontSize: '14px',
     },
     button: {
-        backgroundColor: '#3b82f6',
+        backgroundColor: '#f97415',
         textColor: '#ffffff',
         borderRadius: '6px',
         padding: '12px 24px',
@@ -1137,14 +1137,14 @@ const StylePanel = ({ styles, onStylesChange }: StylePanelProps) => {
                             <div className="flex gap-2">
                                 <Input
                                     type="color"
-                                    value={safeStyles.button.backgroundColor || '#3b82f6'}
+                                    value={safeStyles.button.backgroundColor || '#f97415'}
                                     onChange={(e) => updateStyles('button', 'backgroundColor', e.target.value)}
                                     className="w-20 h-10"
                                 />
                                 <Input
-                                    value={safeStyles.button.backgroundColor || '#3b82f6'}
+                                    value={safeStyles.button.backgroundColor || '#f97415'}
                                     onChange={(e) => updateStyles('button', 'backgroundColor', e.target.value)}
-                                    placeholder="#3b82f6"
+                                    placeholder="#f97415"
                                 />
                             </div>
                         </div>
@@ -1498,7 +1498,7 @@ const DraggableFieldType = ({ fieldType }: { fieldType: FieldTypeConfig }) => {
             style={style}
             {...attributes}
             {...listeners}
-            className="flex items-center gap-3 p-3 bg-background hover:bg-accent rounded-lg cursor-grab active:cursor-grabbing transition-colors border"
+            className="flex items-center gap-3 p-3 bg-background hover:bg-primary rounded-lg cursor-grab active:cursor-grabbing transition-colors border"
         >
             <Icon className="h-5 w-5 text-muted-foreground" />
             <span className="font-medium">{fieldType.label}</span>
@@ -1876,7 +1876,7 @@ const FormBuilder = () => {
         );
     }
 
-    const formStyles = Object.keys(form?.styles || {}).length ? form?.styles : DEFAULT_STYLES
+    const formStyles = form?.styles ? form?.styles : DEFAULT_STYLES
 
     return (
         <DndContext
@@ -2059,7 +2059,7 @@ const FormBuilder = () => {
                                                 e.currentTarget.style.backgroundColor = formStyles.button?.hoverBackgroundColor || formStyles.button?.backgroundColor || '#2563eb';
                                             }}
                                             onMouseLeave={(e) => {
-                                                e.currentTarget.style.backgroundColor = formStyles.button?.backgroundColor || '#3b82f6';
+                                                e.currentTarget.style.backgroundColor = formStyles.button?.backgroundColor || '#f97415';
                                             }}
                                         >
                                             Submit
