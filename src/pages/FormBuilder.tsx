@@ -1876,7 +1876,7 @@ const FormBuilder = () => {
         );
     }
 
-    const formStyles = form?.styles ? form?.styles : DEFAULT_STYLES
+    const formStyles = form?.styles ? (Object.keys(form.styles).length > 0 ? form.styles : DEFAULT_STYLES) : DEFAULT_STYLES
 
     return (
         <DndContext
