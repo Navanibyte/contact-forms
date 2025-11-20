@@ -53,7 +53,7 @@ const Dashboard = () => {
         try {
             const token = sessionStorage.getItem("token");
 
-            const response = await fetch("http://localhost:3000/forms", {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/forms`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -84,7 +84,7 @@ const Dashboard = () => {
         try {
             const token = sessionStorage.getItem("token");
 
-            const response = await fetch(`http://localhost:3000/forms/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/forms/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -109,7 +109,7 @@ const Dashboard = () => {
         try {
             const token = sessionStorage.getItem("token");
 
-            const response = await fetch("http://localhost:3000/forms", {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/forms`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

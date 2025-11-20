@@ -36,7 +36,7 @@ const Auth = () => {
         try {
             const validated = authSchema.parse({ email, password });
 
-            const response = await fetch("http://localhost:3000/auth/register", {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(validated),
@@ -68,7 +68,7 @@ const Auth = () => {
         try {
             const validated = authSchema.parse({ email, password });
 
-            const response = await fetch("http://localhost:3000/auth/login", {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(validated),
@@ -98,7 +98,7 @@ const Auth = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
             <Card className="w-full max-w-md shadow-strong">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                    <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text">
                         FormCraft
                     </CardTitle>
                     <CardDescription>Create beautiful forms in minutes</CardDescription>

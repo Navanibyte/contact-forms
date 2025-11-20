@@ -682,7 +682,7 @@ const PublicForm = () => {
     /** LOAD FORM */
     const load = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/forms/${id}`);
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/forms/${id}`);
             if (response.status === 404) {
                 setForm({ id: id!, title: "Form Not Found", description: "", styles: DEFAULT_STYLES });
                 return;
@@ -986,7 +986,7 @@ const PublicForm = () => {
         };
 
         try {
-            const res = await fetch(`http://localhost:3000/forms/${id}/submit`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/forms/${id}/submit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
