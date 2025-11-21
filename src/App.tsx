@@ -2,13 +2,16 @@ import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tootltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/index";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import FormBuilder from "./pages/FormBuilder";
 import Auth from "./pages/Auth";
 import PublicForm from "./pages/PublicForm";
+import Login from "./components/Auth/Login";
+import ResetPassword from "./components/Auth/ResetPassword";
+import Signup from "./components/Auth/Signup";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +23,22 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* <Route path="/" element={<Index />} /> */}
-          <Route path="/" element={<Auth />} />
+          {/* <Route path="/" element={<Auth />} /> */}
+          <Route
+            path="/"
+            element={<Navigate to="/login" replace />}
+          />
+
+          <Route path="/reset-password/" element={<ResetPassword />} />
+          <Route path="/signup" element={<Signup />} />
+
+
+          <Route
+            path="/login"
+            element={
+              <Login />
+            }
+          />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/builder/:id" element={<FormBuilder />} />
           <Route path="/form/:id" element={<PublicForm />} />

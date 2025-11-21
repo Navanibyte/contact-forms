@@ -881,7 +881,7 @@ const generateFieldId = (): string => {
 };
 
 const getAuthToken = (): string | null => {
-    return sessionStorage.getItem("token");
+    return sessionStorage.getItem("accessToken");
 };
 
 // ============================================================================

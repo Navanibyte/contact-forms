@@ -36,7 +36,7 @@ const Dashboard = () => {
     //  CHECK AUTH
     // -------------------------
     useEffect(() => {
-        const token = sessionStorage.getItem("token");
+        const token = sessionStorage.getItem("accessToken");
 
         if (!token) {
             navigate("/auth");
@@ -51,9 +51,9 @@ const Dashboard = () => {
     // -------------------------
     const loadForms = async () => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem("accessToken");
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/forms`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/forms`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -73,8 +73,8 @@ const Dashboard = () => {
     //  LOGOUT
     // -------------------------
     const handleSignOut = () => {
-        sessionStorage.removeItem("token");
-        navigate("/auth");
+        sessionStorage.removeItem("accessToken");
+        navigate("/");
     };
 
     // -------------------------
@@ -82,9 +82,9 @@ const Dashboard = () => {
     // -------------------------
     const handleDeleteForm = async (id: string) => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem("accessToken");
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/forms/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/forms/${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -107,9 +107,10 @@ const Dashboard = () => {
     // -------------------------
     const handleNewForm = async () => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem("accessToken");
+            console.log("---called----")
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/forms`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/forms`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
