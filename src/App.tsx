@@ -23,7 +23,7 @@ const App = () => (
           <Route path="/" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/builder/:id" element={<FormBuilder />} />
-          <Route path="/form/:id" element={<PublicForm />} />
+          <Route path="/formbuild/:id" element={<PublicForm />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1755,7 +1755,7 @@ const FormBuilder = () => {
     const generateEmbedCode = () => {
         const code = `<!-- Form Embed Code -->
 <iframe 
-  src="${window.location.origin}/form/${id}"  
+  src="${window.location.origin}/formbuild/${id}"  
   style="width: 100%; height: 100vh; border: none;"
   allow="cross-origin-isolated"
   title="Form"
