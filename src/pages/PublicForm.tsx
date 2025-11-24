@@ -682,7 +682,9 @@ const PublicForm = () => {
     /** LOAD FORM */
     const load = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/forms/${id}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/forms/${id}`, {
+                credentials: "include",   // 🔥 required for cookies / sessions
+            });
             if (response.status === 404) {
                 setForm({ id: id!, title: "Form Not Found", description: "", styles: DEFAULT_STYLES });
                 return;
@@ -988,6 +990,8 @@ const PublicForm = () => {
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/forms/${id}/submit`, {
                 method: "POST",
+                credentials: "include",   // 🔥 required for cookies / sessions
+
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
