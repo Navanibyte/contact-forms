@@ -1546,6 +1546,8 @@ const FormBuilder = () => {
 
             const response = await fetch(`${API_BASE_URL}/forms/${id}`, {
                 method: "GET",
+                credentials: "include",   // 🔥 required for cookies / sessions
+
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -1633,6 +1635,8 @@ const FormBuilder = () => {
 
             const response = await fetch(`${API_BASE_URL}/forms/${id}`, {
                 method: "PUT",
+                credentials: "include",   // 🔥 required for cookies / sessions
+
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`

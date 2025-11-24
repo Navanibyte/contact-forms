@@ -247,8 +247,9 @@ const Auth = () => {
         try {
             const validated = authSchema.parse({ email, password });
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
                 method: "POST",
+                credentials: "include",   // 🔥 required for cookies / sessions
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(validated),
             });
@@ -279,8 +280,10 @@ const Auth = () => {
         try {
             const validated = authSchema.parse({ email, password });
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 method: "POST",
+                credentials: "include",   // 🔥 required for cookies / sessions
+
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(validated),
             });

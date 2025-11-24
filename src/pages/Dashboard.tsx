@@ -54,7 +54,8 @@ const Dashboard = () => {
             const token = sessionStorage.getItem("accessToken");
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/forms`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
+                credentials: "include",   // 🔥 required for cookies / sessions
             });
 
             const data = await response.json();
@@ -86,6 +87,8 @@ const Dashboard = () => {
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/forms/${id}`, {
                 method: "DELETE",
+                credentials: "include",   // 🔥 required for cookies / sessions
+
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -112,6 +115,8 @@ const Dashboard = () => {
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/forms`, {
                 method: "POST",
+                credentials: "include",   // 🔥 required for cookies / sessions
+
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
