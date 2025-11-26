@@ -10,6 +10,7 @@ import OTPVerificationModal from "./OTPVerificationModal";
 import type { IsignupLoginPayload } from "../../utils/security/encryption.interface";
 import { API_URLS } from "../../services/api-constants";
 import { useToast } from "../../utils/toaster/useToast";
+import { toast } from "sonner";
 
 interface FormState {
   email: string;
@@ -22,7 +23,6 @@ export default function Login() {
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
   const navigate = useNavigate();
-  const { showError, showSuccess } = useToast();
 
   useEffect(() => {
     sessionStorage.clear();
@@ -47,14 +47,14 @@ export default function Login() {
           sessionStorage.setItem("user_id", res.data.user_id)
           setUserEmail(res.data.email || form.email);
           setShowOTPModal(true);
-          showSuccess("Please enter your 2FA code");
+          toast.success("Please enter your 2FA code");
         } else if ('access_token' in res.data && res.data.access_token) {
           localStorage.setItem("accessToken", res.data.access_token);
           localStorage.setItem("token", res.data.access_token);
           sessionStorage.setItem("accessToken", res.data.access_token);
           sessionStorage.setItem("email", form.email);
           sessionStorage.setItem("user_id", res.data.user_id)
-          showSuccess(res.message || "Login successful");
+          toast.success(res.message || "Login successful");
           navigate("/dashboard");
         } else {
           throw new Error("Invalid login response");
@@ -65,7 +65,7 @@ export default function Login() {
 
     } catch (error: any) {
       console.error(error);
-      showError(error.response?.data?.message || error.detail || "Login failed");
+      toast.error(error.response?.data?.message || error.detail || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -79,11 +79,11 @@ export default function Login() {
       sessionStorage.setItem("accessToken", accessToken);
       sessionStorage.setItem("email", userEmail);
       sessionStorage.removeItem('partialToken');
-      showSuccess("Login successful!");
+      toast.success("Login successful!");
       navigate("/dashboard");
     } else {
       console.error('No access token in OTP response:', data);
-      showError("Authentication failed. Please try again.");
+      toast.error("Authentication failed. Please try again.");
     }
   };
 
