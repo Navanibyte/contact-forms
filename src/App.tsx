@@ -13,6 +13,7 @@ import Login from "./components/Auth/Login";
 import ResetPassword from "./components/Auth/ResetPassword";
 import Signup from "./components/Auth/Signup";
 import OAuthSuccess from "./pages/OAuthsucess";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,14 @@ const App = () => (
               <Login />
             }
           />
+
+          <Route
+            path="/forgot-password"
+            element={
+              <ForgotPassword />
+            }
+          />
+
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/builder/:id" element={<FormBuilder />} />
 
