@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Lock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, Lock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import { API_BASE_URL } from '../services/api-constants';
+import { useNavigate } from 'react-router-dom';
 
 export default function ForgotPasswordFlow() {
   const [step, setStep] = useState('forgot'); // 'forgot' or 'reset'
@@ -10,6 +11,7 @@ export default function ForgotPasswordFlow() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const navigate = useNavigate();
 
   // Get token from URL if present
   React.useEffect(() => {
@@ -131,6 +133,16 @@ export default function ForgotPasswordFlow() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-8">
+        {/* Back to Login Button */}
+        <button
+          type="button"
+          onClick={() => navigate('/login')}
+          className="flex items-center gap-2 text-gray-600 hover:text-orange-500 transition-all duration-200 mb-8 group"
+        >
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
+          <span className="font-medium">Back to Login</span>
+        </button>
+
         {step === 'forgot' ? (
           <>
             <div className="text-center mb-8">
@@ -185,7 +197,7 @@ export default function ForgotPasswordFlow() {
                   onClick={() => setStep('reset')}
                   className="text-orange-500 hover:text-orange-600 text-sm font-medium"
                 >
-                  Already have a reset token?
+                  Reset Password
                 </button>
               </div>
             </div>
