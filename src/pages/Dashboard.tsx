@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { toast } from "sonner";
-import { PlusCircle, FileText, Pencil, Trash2, LogOut, Search } from "lucide-react";
+import { PlusCircle, FileText, Pencil, Trash2, LogOut, Search, FileCheck } from "lucide-react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,6 +17,7 @@ import {
     AlertDialogTrigger
 } from "../components/ui/alert-dialog";
 import { Input } from "../components/ui/input";
+import { Badge } from "../components/ui/badge";
 
 interface Form {
     form_id: string;
@@ -24,6 +25,7 @@ interface Form {
     description: string | null;
     created_at: string;
     updated_at: string;
+    total_submissions?: number;
 }
 
 const Dashboard = () => {
@@ -55,7 +57,7 @@ const Dashboard = () => {
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/forms`, {
                 headers: { Authorization: `Bearer ${token}` },
-                credentials: "include",   // 🔥 required for cookies / sessions
+                credentials: "include",
             });
 
             const data = await response.json();
@@ -87,8 +89,7 @@ const Dashboard = () => {
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/forms/${id}`, {
                 method: "DELETE",
-                credentials: "include",   // 🔥 required for cookies / sessions
-
+                credentials: "include",
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -115,8 +116,7 @@ const Dashboard = () => {
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/forms`, {
                 method: "POST",
-                credentials: "include",   // 🔥 required for cookies / sessions
-
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
@@ -136,7 +136,6 @@ const Dashboard = () => {
 
             toast.success("New form created!");
 
-            // 🛠 FIX: Backend might return "id" or "form_id"
             const id = data?.[0]?.form_id || data?.[0]?.id;
 
             if (!id) {
@@ -145,13 +144,13 @@ const Dashboard = () => {
                 return;
             }
 
-            // 🛠 If ID is valid → navigate
             navigate(`/builder/${id}`);
 
         } catch (error: any) {
             toast.error(error.message);
         }
     };
+
     const filteredForms = forms.filter(
         (form) =>
             form.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -222,10 +221,16 @@ const Dashboard = () => {
                         {filteredForms.map((form) => (
                             <Card key={form.form_id} className="shadow-soft hover:shadow-medium transition-shadow">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <FileText className="h-5 w-5 text-primary" />
-                                        {form.title}
-                                    </CardTitle>
+                                    <div className="flex items-start justify-between">
+                                        <CardTitle className="flex items-center gap-2">
+                                            <FileText className="h-5 w-5 text-primary" />
+                                            {form.title}
+                                        </CardTitle>
+                                        <Badge variant="secondary" className="ml-2">
+                                            <FileCheck className="h-3 w-3 mr-1" />
+                                            {form.total_submissions || 0}
+                                        </Badge>
+                                    </div>
                                     {form.description && <CardDescription>{form.description}</CardDescription>}
                                 </CardHeader>
 
