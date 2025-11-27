@@ -14,6 +14,7 @@ import ResetPassword from "./components/Auth/ResetPassword";
 import Signup from "./components/Auth/Signup";
 import OAuthSuccess from "./pages/OAuthsucess";
 import ForgotPassword from "./pages/ForgotPassword";
+import FormSubmissionHistory from "./pages/FormSubmissionHistory";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,11 @@ const App = () => (
             element={
               <ForgotPassword />
             }
+          />
+
+          <Route
+            path = "/submissions/:id"
+            element = {<FormSubmissionHistory />}
           />
 
           <Route path="/dashboard" element={<Dashboard />} />

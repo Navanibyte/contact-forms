@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { toast } from "sonner";
-import { PlusCircle, FileText, Pencil, Trash2, LogOut, Search, FileCheck } from "lucide-react";
+import { PlusCircle, FileText, Pencil, Trash2, LogOut, Search, FileCheck, Eye } from "lucide-react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -47,6 +47,12 @@ const Dashboard = () => {
 
         loadForms();
     }, []);
+
+
+
+    const handleFormClick = (formId: string) => {
+        navigate(`/submissions/${formId}`);
+    }
 
     // -------------------------
     //  FETCH ALL FORMS
@@ -226,10 +232,21 @@ const Dashboard = () => {
                                             <FileText className="h-5 w-5 text-primary" />
                                             {form.title}
                                         </CardTitle>
-                                        <Badge variant="secondary" className="ml-2">
-                                            <FileCheck className="h-3 w-3 mr-1" />
+                                        {/* <Badge variant="secondary" className="ml-2">
+                                            <Eye size={16} />
                                             {form.total_submissions || 0}
-                                        </Badge>
+                                        </Badge> */}
+
+                                        <Badge variant="secondary" className="ml-2 mt-1">
+                  <button
+                  onClick={() => handleFormClick(form.form_id)}
+                    className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-700 px-4 py-2 rounded-lg text-sm font-semibold transition"
+                  >
+                    <Eye size={16} />
+                    {form.total_submissions || 0}
+                  </button>
+                </Badge>
+
                                     </div>
                                     {form.description && <CardDescription>{form.description}</CardDescription>}
                                 </CardHeader>
