@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Eye, Calendar, User, Loader2, Search, Download, Trash2, MoveLeft } from 'lucide-react';
 import { Navigate, useParams } from 'react-router-dom';
 import { API_URLS } from '../services/api-constants';
+import { toPng } from 'html-to-image';
 
 
 const FORM_INFO = {
@@ -22,6 +23,9 @@ const FormSubmissionHistory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [formInfo, setFormInfo] = useState(FORM_INFO);
   const { id: formId } = useParams();
+
+    const containerRef = useRef();
+
 
 
   // Fetch submissions on component mount
@@ -58,6 +62,28 @@ const FormSubmissionHistory = () => {
     console.error('Error downloading CSV:', error);
   }
 }
+
+
+  const downloadImage = async () => {
+    if (!containerRef.current) return;
+
+    try {
+      const dataUrl = await toPng(containerRef.current, {
+        backgroundColor: '#ffffff',
+        quality: 1,
+        pixelRatio: 2,
+      });
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'form_submission.png';
+      link.click();
+    } catch (err) {
+      console.error('Error generating image:', err);
+    }
+  };
+
+
+
 
 
   // Fetch submissions for a form
@@ -316,9 +342,9 @@ const FormSubmissionHistory = () => {
             </button>
             
             <div className="flex gap-2">
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
+              <button onClick={downloadImage} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
                 <Download size={16} />
-                Download Image
+                Download as Image
               </button>
               {/* <button className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium">
                 <Trash2 size={16} />
