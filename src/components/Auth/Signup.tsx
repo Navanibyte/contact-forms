@@ -193,7 +193,7 @@ export default function Signup() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            {/* <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
             <input
@@ -206,7 +206,18 @@ export default function Signup() {
               disabled={state.isLoading}
               required
               autoComplete="new-password"
+            /> */}
+
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
+            <PasswordInput
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange("password")}
             />
+
             {form.password && (
               <div className="mt-2">
                 <div className="text-xs text-gray-600 mb-2">Password must contain:</div>
