@@ -287,12 +287,12 @@ const FormSubmissionHistory = () => {
             <div className="flex gap-2">
               <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
                 <Download size={16} />
-                Export
+                Download Image
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium">
+              {/* <button className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium">
                 <Trash2 size={16} />
                 Delete
-              </button>
+              </button> */}
             </div>
           </div>
 
