@@ -1,117 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Eye, Calendar, User, Loader2, Search, Download, Trash2 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { ArrowLeft, Eye, Calendar, User, Loader2, Search, Download, Trash2, MoveLeft } from 'lucide-react';
+import { Navigate, useParams } from 'react-router-dom';
 import { API_URLS } from '../services/api-constants';
 
-// Sample submissions data - replace with your actual API call
-const SAMPLE_SUBMISSIONS = [
-  {
-    submission_id: 'sub-1',
-    user_id: 101,
-    form_id: 1,
-    submission_json: {
-      data: {
-        name: 'Navani',
-        email: 'shhsjd@g.com',
-        phone: '290290392030',
-        description: 'kdlsdlksld'
-      }
-    },
-    created_at: '2025-11-27T09:45:00Z'
-  },
-  {
-    submission_id: 'sub-2',
-    user_id: 102,
-    form_id: 1,
-    submission_json: {
-      data: {
-        name: 'Rajesh Kumar',
-        email: 'rajesh.k@example.com',
-        phone: '9876543210',
-        description: 'Interested in your services'
-      }
-    },
-    created_at: '2025-11-26T14:30:00Z'
-  },
-  {
-    submission_id: 'sub-3',
-    user_id: 103,
-    form_id: 1,
-    submission_json: {
-      data: {
-        firstName: 'Priya',
-        lastName: 'Sharma',
-        contactEmail: 'priya.sharma@example.com',
-        companyName: 'Tech Corp',
-        message: 'Need more information about pricing and enterprise features'
-      }
-    },
-    created_at: '2025-11-25T11:15:00Z'
-  },
-  {
-    submission_id: 'sub-4',
-    user_id: 104,
-    form_id: 1,
-    submission_json: {
-      data: {
-        customerName: 'Amit Patel',
-        rating: '5',
-        feedback: 'Excellent service! Very satisfied with the product quality and customer support.',
-        wouldRecommend: 'Yes',
-        category: 'Product Quality'
-      }
-    },
-    created_at: '2025-11-24T16:20:00Z'
-  },
-  {
-    submission_id: 'sub-5',
-    user_id: 105,
-    form_id: 1,
-    submission_json: {
-      data: {
-        fullName: 'Sneha Reddy',
-        businessEmail: 'sneha.reddy@example.com',
-        phoneNumber: '7766554433',
-        companySize: '50-100 employees',
-        inquiry: 'Looking for enterprise solutions with custom integrations'
-      }
-    },
-    created_at: '2025-11-23T10:00:00Z'
-  },
-  {
-    submission_id: 'sub-6',
-    user_id: 106,
-    form_id: 1,
-    submission_json: {
-      data: {
-        name: 'Vikram Singh',
-        email: 'vikram.s@example.com',
-        phone: '6655443322',
-        subject: 'Technical Support',
-        message: 'Need assistance with API integration and documentation'
-      }
-    },
-    created_at: '2025-11-22T15:45:00Z'
-  },
-  {
-    submission_id: 'sub-7',
-    user_id: 107,
-    form_id: 1,
-    submission_json: {
-      data: {
-        applicantName: 'Ananya Iyer',
-        emailAddress: 'ananya.i@example.com',
-        contactNumber: '5544332211',
-        position: 'Senior Developer',
-        experience: '5 years',
-        coverLetter: 'I am excited to apply for this position. I have extensive experience in React and Node.js development.'
-      }
-    },
-    created_at: '2025-11-21T09:30:00Z'
-  }
-];
 
 const FORM_INFO = {
   form_id: 1,
@@ -204,6 +97,10 @@ const FormSubmissionHistory = () => {
     setHtmlTemplate('');
   };
 
+  const handleBackToDashboard = () => {
+    window.location.href = '/dashboard';    
+  }
+
   const formatDate = (dateString: string | number | Date) => {
     return new Date(dateString).toLocaleString('en-US', {
       month: 'short',
@@ -258,6 +155,17 @@ const FormSubmissionHistory = () => {
                   <p className="text-gray-600">{formInfo.description}</p>
                 )}
               </div>
+
+               <div>
+                <button
+              onClick={handleBackToDashboard}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition font-medium"
+            >
+              <ArrowLeft size={20} />
+              Back to Dashboard
+            </button>
+            </div>
+
             </div>
             <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-100">
               <span className="bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-semibold">
