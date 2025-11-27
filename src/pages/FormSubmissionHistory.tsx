@@ -29,6 +29,37 @@ const FormSubmissionHistory = () => {
     fetchSubmissions();
   }, []);
 
+ const downloadCsv = async (formId: number) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/forms/${formId}/submissions/export`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'text/csv',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download CSV');
+    }
+
+    // Convert response to Blob
+    const blob = await response.blob();
+
+    // Create a temporary download link
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `form_${formId}_submissions.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error downloading CSV:', error);
+  }
+}
+
+
   // Fetch submissions for a form
   const fetchSubmissions = async () => {
     setLoading(true);
@@ -172,7 +203,7 @@ const FormSubmissionHistory = () => {
                 {filteredSubmissions.length} {filteredSubmissions.length === 1 ? 'Submission' : 'Submissions'}
               </span>
               {filteredSubmissions.length > 0 && (
-                <button className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm font-medium transition">
+                <button onClick={() => downloadCsv(formInfo.form_id)} className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm font-medium transition">
                   <Download size={16} />
                   Export All
                 </button>
