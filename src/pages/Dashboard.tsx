@@ -136,7 +136,7 @@ const Dashboard = () => {
 
             toast.success("New form created!");
 
-            const id = data?.[0]?.form_id || data?.[0]?.id;
+            const id = data?.form_id || data?.id;
 
             if (!id) {
                 toast.error("Form created but no form_id returned");

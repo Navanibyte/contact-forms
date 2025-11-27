@@ -2027,7 +2027,7 @@ const FormBuilder = () => {
             const payload = {
                 title: form.title,
                 description: form.description,
-                embedded_code: fullEmbedHTML, // Send full HTML instead of iframe code
+                // embedded_code: fullEmbedHTML, // Send full HTML instead of iframe code
                 styles: form.styles,
                 fields: fields.map((f, index) => ({
                     label: f.label,
