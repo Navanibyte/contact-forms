@@ -48,8 +48,6 @@ const Dashboard = () => {
         loadForms();
     }, []);
 
-
-
     const handleFormClick = (formId: string) => {
         navigate(`/submissions/${formId}`);
     }
@@ -227,39 +225,41 @@ const Dashboard = () => {
                         {filteredForms.map((form) => (
                             <Card key={form.form_id} className="shadow-soft hover:shadow-medium transition-shadow">
                                 <CardHeader>
-                                    <div className="flex items-start justify-between">
-                                        <CardTitle className="flex items-center gap-2">
-                                            <FileText className="h-5 w-5 text-primary" />
-                                            {form.title}
-                                        </CardTitle>
-                                        {/* <Badge variant="secondary" className="ml-2">
-                                            <Eye size={16} />
-                                            {form.total_submissions || 0}
-                                        </Badge> */}
-
-                                        <Badge variant="secondary" className="ml-2 mt-1">
-                  <button
-                  onClick={() => handleFormClick(form.form_id)}
-                    className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-700 px-4 py-2 rounded-lg text-sm font-semibold transition"
-                  >
-                    <Eye size={16} />
-                    {form.total_submissions || 0}
-                  </button>
-                </Badge>
-
-                                    </div>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <FileText className="h-5 w-5 text-primary" />
+                                        {form.title}
+                                    </CardTitle>
                                     {form.description && <CardDescription>{form.description}</CardDescription>}
                                 </CardHeader>
 
                                 <CardContent>
+                                    {/* Submissions count display */}
+                                    <div className="mb-4 flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                        <span className="text-sm text-muted-foreground font-medium">Total Submissions</span>
+                                        <Badge variant="secondary" className="text-base font-semibold">
+                                            {form.total_submissions || 0}
+                                        </Badge>
+                                    </div>
+
                                     <div className="flex gap-2">
+                                        {/* VIEW RESPONSES BUTTON */}
+                                        <Button
+                                            variant="outline"
+                                            className="flex-1"
+                                            onClick={() => handleFormClick(form.form_id)}
+                                        >
+                                            <FileCheck className="h-4 w-4 mr-2" />
+                                            View Responses
+                                        </Button>
+
+                                        {/* EDIT FORM BUTTON */}
                                         <Button
                                             variant="outline"
                                             className="flex-1"
                                             onClick={() => navigate(`/builder/${form.form_id}`)}
                                         >
                                             <Pencil className="h-4 w-4 mr-2" />
-                                            Edit
+                                            Edit Form
                                         </Button>
 
                                         {/* DELETE BUTTON */}
