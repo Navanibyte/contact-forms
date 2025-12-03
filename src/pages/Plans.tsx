@@ -619,6 +619,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Check, Sparkles, Zap, Crown, Star, ArrowRight, ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -722,6 +723,8 @@ export default function Plans(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [processingPlanId, setProcessingPlanId] = useState<number | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchPlans();
@@ -853,6 +856,10 @@ export default function Plans(): JSX.Element {
     );
   }
 
+  const handleDashboard = () => {
+     navigate('/dashboard');
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -860,6 +867,7 @@ export default function Plans(): JSX.Element {
 
           <div className = 'flex justify-end w-full '>
                 <button
+                 onClick={handleDashboard}
               className="text-primary inline-flex items-center justify-center px-4 py-2 bg-primary/10 rounded-full mb-6 font-bold text-lg"
             >
               {/* <ArrowRight size={20} /> */}

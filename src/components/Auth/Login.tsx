@@ -28,48 +28,116 @@ export default function Login() {
     sessionStorage.clear();
   }, []);
 
+  // const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   try {
+  //     const payload: IsignupLoginPayload = {
+  //       email: form.email?.trim(),
+  //       password: form.password?.trim()
+  //     }
+  //     // const encryptedValue = encryptWithHMAC(payload);
+  //     const res = await loginUser(payload);
+  //     console.log("Login response:", res.data);
+
+  //     if (res?.data) {
+  //       if ('requires_2fa' in res.data && res.data.requires_2fa) {
+  //         sessionStorage.setItem('partialToken', res.data.partial_token);
+  //         sessionStorage.setItem("user_id", res.data.user_id)
+  //         setUserEmail(res.data.email || form.email);
+  //         setShowOTPModal(true);
+  //         toast.success("Please enter your 2FA code");
+  //       } else if ('access_token' in res.data && res.data.access_token) {
+  //         localStorage.setItem("accessToken", res.data.access_token);
+  //         localStorage.setItem("token", res.data.access_token);
+  //         sessionStorage.setItem("accessToken", res.data.access_token);
+  //         sessionStorage.setItem("email", form.email);
+  //         sessionStorage.setItem("user_id", res.data.user_id)
+  //         toast.success(res.message || "Login successful");
+  //         navigate("/dashboard");
+  //       } else {
+  //         throw new Error("Invalid login response");
+  //       }
+  //     } else {
+  //       throw new Error("No response data");
+  //     }
+
+  //   } catch (error: any) {
+  //     console.error(error);
+  //     toast.error(error.response?.data?.message || error.detail || "Login failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const payload: IsignupLoginPayload = {
-        email: form.email?.trim(),
-        password: form.password?.trim()
-      }
-      // const encryptedValue = encryptWithHMAC(payload);
-      const res = await loginUser(payload);
-      console.log("Login response:", res.data);
+  try {
+    const payload: IsignupLoginPayload = {
+      email: form.email?.trim(),
+      password: form.password?.trim()
+    };
 
-      if (res?.data) {
-        if ('requires_2fa' in res.data && res.data.requires_2fa) {
-          sessionStorage.setItem('partialToken', res.data.partial_token);
-          sessionStorage.setItem("user_id", res.data.user_id)
-          setUserEmail(res.data.email || form.email);
-          setShowOTPModal(true);
-          toast.success("Please enter your 2FA code");
-        } else if ('access_token' in res.data && res.data.access_token) {
-          localStorage.setItem("accessToken", res.data.access_token);
-          localStorage.setItem("token", res.data.access_token);
-          sessionStorage.setItem("accessToken", res.data.access_token);
-          sessionStorage.setItem("email", form.email);
-          sessionStorage.setItem("user_id", res.data.user_id)
-          toast.success(res.message || "Login successful");
-          navigate("/dashboard");
-        } else {
-          throw new Error("Invalid login response");
+    const res = await loginUser(payload);
+    console.log("Login response:", res.data);
+
+    if (res?.data) {
+      if ('requires_2fa' in res.data && res.data.requires_2fa) {
+        sessionStorage.setItem('partialToken', res.data.partial_token);
+        sessionStorage.setItem("user_id", res.data.user_id);
+        setUserEmail(res.data.email || form.email);
+        setShowOTPModal(true);
+        toast.success("Please enter your 2FA code");
+      } else if ('access_token' in res.data && res.data.access_token) {
+        localStorage.setItem("accessToken", res.data.access_token);
+        localStorage.setItem("token", res.data.access_token);
+        sessionStorage.setItem("accessToken", res.data.access_token);
+        sessionStorage.setItem("email", form.email);
+        sessionStorage.setItem("user_id", res.data.user_id);
+        toast.success(res.message || "Login successful");
+
+        // ⭐ ADDED SUBSCRIPTION CHECK (ONLY THIS PART)
+        const token = res.data.access_token;
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const userId = payload?.id;
+
+        try {
+          const subRes = await fetch(
+            `${import.meta.env.VITE_API_URL}/subscriptions/is-subscribed?user_id=${userId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          );
+
+          const subData = await subRes.json();
+
+          if (subData.subscribed) {
+            navigate("/dashboard");
+          } else {
+            navigate("/plans");
+          }
+        } catch (err) {
+          console.error("Subscription check failed:", err);
+          navigate("/plans");
         }
+        // ⭐ END
       } else {
-        throw new Error("No response data");
+        throw new Error("Invalid login response");
       }
-
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response?.data?.message || error.detail || "Login failed");
-    } finally {
-      setLoading(false);
+    } else {
+      throw new Error("No response data");
     }
-  };
+  } catch (error: any) {
+    console.error(error);
+    toast.error(error.response?.data?.message || error.detail || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleOTPSuccess = (data: any) => {
     // Handle different possible response structures
