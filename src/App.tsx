@@ -15,6 +15,7 @@ import Signup from "./components/Auth/Signup";
 import OAuthSuccess from "./pages/OAuthsucess";
 import ForgotPassword from "./pages/ForgotPassword";
 import FormSubmissionHistory from "./pages/FormSubmissionHistory";
+import Plans from "./pages/Plans";
 
 const queryClient = new QueryClient();
 
@@ -60,7 +61,8 @@ const App = () => (
 
           <Route path = '/oauth-success' element = {<OAuthSuccess />} />
           <Route path="/formbuild/:id" element={<PublicForm />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          <Route path="/plans" element={<Plans />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
