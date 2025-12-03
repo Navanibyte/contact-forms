@@ -618,7 +618,7 @@
 // }
 
 import React, { useEffect, useState } from 'react';
-import { Check, Sparkles, Zap, Crown, Star, ArrowRight } from 'lucide-react';
+import { Check, Sparkles, Zap, Crown, Star, ArrowRight, ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -857,10 +857,23 @@ export default function Plans(): JSX.Element {
     <div className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
+
+          <div className = 'flex justify-end w-full '>
+                <button
+              className="text-primary inline-flex items-center justify-center px-4 py-2 bg-primary/10 rounded-full mb-6 font-bold text-lg"
+            >
+              {/* <ArrowRight size={20} /> */}
+              Go to Dashboard
+              <ArrowUpRight  size = {30}/>
+
+
+            </button>
+            </div>
+
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center px-4 py-2 bg-primary/10 rounded-full mb-6">
             <Star className="w-4 h-4 text-primary mr-2" />
-            <span className="text-sm font-semibold text-primary">Form Builder Pricing Plans</span>
+            <span className="text-sm font-semibold text-primary">Form Craft Pricing Plans</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
             Build Forms Without Limits
