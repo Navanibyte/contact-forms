@@ -16,6 +16,8 @@ import OAuthSuccess from "./pages/OAuthsucess";
 import ForgotPassword from "./pages/ForgotPassword";
 import FormSubmissionHistory from "./pages/FormSubmissionHistory";
 import Plans from "./pages/Plans";
+import PaymentFailure from "./pages/PaymentFailed";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +65,10 @@ const App = () => (
           <Route path="/formbuild/:id" element={<PublicForm />} />
 
           <Route path="/plans" element={<Plans />} />
+
+          <Route path="/payment-failed" element={<PaymentFailure />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
