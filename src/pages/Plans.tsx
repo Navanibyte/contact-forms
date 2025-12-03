@@ -777,7 +777,7 @@ export default function Plans(): JSX.Element {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          user_id: 1,
+          user_id: sessionStorage.getItem('user_id'),
           plan_id: plan.id
         })
       });
